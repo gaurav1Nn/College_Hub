@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoCaretDown } from "react-icons/io5";
 
+// # all the related to login is written in this file JWT is used for login and logout
 const Header = () => {
   const [username, setUsername] = useState(''); // State to store username
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown visibility

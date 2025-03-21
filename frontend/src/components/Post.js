@@ -1,20 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { AiFillLike } from "react-icons/ai";
-import { FaComment } from "react-icons/fa";
-import { IoIosSend, IoIosTimer } from "react-icons/io";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { FaRegComment } from "react-icons/fa";
+import { IoTimeOutline, IoSend } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
 const Post = ({ postId, avatar, createdBy, title, content, likes, comments: initialComments, createdAt }) => {
   const [user, setUser] = useState({ username: createdBy.username });
-  const [isLiked, setIsLiked] = useState(false); // Track if the user has liked the post
-  const [likeCount, setLikeCount] = useState(likes); // Track likes separately
-  const [comments, setComments] = useState(initialComments); // Track comments
-  const [commentText, setCommentText] = useState(""); // To handle comment input
-  const [submittingComment, setSubmittingComment] = useState(false); // Track comment submission
-  const [showComments, setShowComments] = useState(false); // Track if comments section is visible
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(likes);
+  const [comments, setComments] = useState(initialComments);
+  const [commentText, setCommentText] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
-  // Format the created date
-  const formattedDate = new Date(createdAt).toLocaleString();
+  // Format the created date to a more elegant format
+  const formatDate = (dateString) => {
+    if (!dateString) return "Unknown date";
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Check if it's today
+    if (date.toDateString() === now.toDateString()) {
+      return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    
+    // Check if it's yesterday
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) {
+      return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    
+    // Otherwise, return a formatted date
+    return date.toLocaleDateString('en-US', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formattedDate = formatDate(createdAt);
+
+  // Function to safely format comment dates
+  const formatCommentDate = (dateString) => {
+    if (!dateString) return "Recent";
+    
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric'
+      });
+    } catch (error) {
+      return "Recent";
+    }
+  };
 
   useEffect(() => {
     // Check if the post is already liked by the user
@@ -57,11 +100,11 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
 
   // Function to handle comment submission
   const handleCommentSubmit = async (e) => {
-    e.preventDefault(); // Prevent form submission
-    if (!commentText.trim()) return; // Prevent empty comments
+    e.preventDefault();
+    if (!commentText.trim()) return;
 
     try {
-      setSubmittingComment(true); // Disable submit button while posting the comment
+      setSubmittingComment(true);
 
       const token = localStorage.getItem("token");
       if (!token) {
@@ -82,9 +125,8 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
         config
       );
 
-      // Update the comments list with the new comment
       setComments(response.data.comments);
-      setCommentText(""); // Clear the comment input
+      setCommentText("");
       setSubmittingComment(false);
 
     } catch (error) {
@@ -94,89 +136,178 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg mt-4">
-      <div className="flex items-center">
-        <img
-          src={avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpgH-Ja36phm6ZMX8IfMAUeTQgtc3RsdMpog&s"}
-          alt={user.username || "Loading..."}
-          className="rounded-full w-12 h-12 mr-4"
-        />
-        <div>
-          <p className="text-white text-lg">{user.username}</p>
-          <p className="text-gray-400">@ {formattedDate}</p>
-        </div>
-      </div>
-      <div className="mt-4 text-white">
-  <h3 className="font-bold text-lg">{title}</h3>
-  <p style={{ whiteSpace: 'pre-line' }}>{content}</p>
-</div>
-
-      <div className="flex justify-between mt-4 items-center">
-        <div className="flex space-x-4">
-          <button
-            className={`flex items-center space-x-2 ${isLiked ? "bg-blue-600" : "bg-gray-700"} text-white px-3 py-1 rounded-md hover:bg-blue-500`}
-            onClick={handleLike}
-            disabled={isLiked} // Disable button if already liked
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="paper mb-6 overflow-hidden"
+    >
+      {/* Post Header */}
+      <div className="flex items-start">
+        <motion.div 
+          className="relative"
+          whileHover={{ scale: 1.05 }}
+        >
+          <img
+            src={avatar || "https://via.placeholder.com/40"}
+            alt={`${createdBy.username}'s avatar`}
+            className="w-10 h-10 rounded-full object-cover border-2 border-accent/30"
+          />
+          <motion.div 
+            className="absolute -bottom-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center border-2 border-secondary"
+            whileHover={{ scale: 1.2 }}
           >
-            <AiFillLike className="text-xl" />
-            <span>
-              {likeCount} Like{likeCount !== 1 ? "s" : ""}
-            </span>
-          </button>
-
-          {/* Toggle comments section on click */}
-          <button
-            className="flex items-center space-x-2 bg-gray-700 text-white px-3 py-1 rounded-md hover:bg-gray-600"
-            onClick={() => setShowComments((prev) => !prev)} // Toggle comments visibility
-          >
-            <FaComment className="text-xl" />
-            <span>
-              {comments.length} Comment{comments.length !== 1 ? "s" : ""}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Conditional Rendering of Comments Section */}
-      {showComments && (
-        <div className="mt-4">
-          <h4 className="text-white font-bold">Comments:</h4>
-
-          {/* Comment Input */}
-          <form onSubmit={handleCommentSubmit} className="mt-4 flex">
-            <input
-              type="text"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              className="flex-grow p-2 rounded-full pl-4 mr-2 bg-transparent border border-[#545353]" // Added `flex-grow` and `mr-2` for spacing
-              placeholder="Write a comment..."
-              disabled={submittingComment} // Disable input when submitting comment
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white text-3xl p-2 rounded-full hover:bg-blue-500"
-              disabled={submittingComment} // Disable button when submitting comment
+            <span className="text-white text-[10px] font-bold">+</span>
+          </motion.div>
+        </motion.div>
+        
+        <div className="ml-3 flex-1">
+          <div className="flex items-center justify-between">
+            <motion.h3 
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="font-semibold text-text-primary"
             >
-              {submittingComment ? <IoIosTimer /> : <IoIosSend />}
-            </button>
-          </form>
-
-          {comments.length > 0 && (
-            <div className="mt-4">
-              {comments.map((comment) => (
-                <div key={comment._id} className="bg-gray-700 p-2 rounded mt-2">
-                  <p className="font-bold text-gray-300">{comment.createdBy.username}</p>
-                  <p className="text-gray-200">{comment.text}</p>
-                  <span className="text-xs text-gray-400">
-                    {new Date(comment.createdAt).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+              {createdBy.username}
+            </motion.h3>
+            <motion.div 
+              initial={{ x: 10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center text-text-muted text-xs"
+            >
+              <IoTimeOutline className="mr-1" />
+              <span>{formattedDate}</span>
+            </motion.div>
+          </div>
+          
+          <motion.h2
+            initial={{ y: -5, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl font-semibold mt-1 mb-3 text-text-primary"
+          >
+            {title}
+          </motion.h2>
         </div>
-      )}
-    </div>
+      </div>
+
+      {/* Post Content */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="mt-3 mb-4 text-text-secondary leading-relaxed"
+      >
+        <p className="whitespace-pre-line">{content}</p>
+      </motion.div>
+
+      {/* Divider */}
+      <div className="divider my-4"></div>
+
+      {/* Post Actions */}
+      <div className="flex items-center justify-between">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleLike}
+          className={`flex items-center space-x-2 px-3 py-1.5 rounded-full ${
+            isLiked 
+              ? "text-accent bg-accent/10" 
+              : "text-text-muted hover:text-accent hover:bg-accent/5"
+          } transition-all duration-300`}
+        >
+          {isLiked ? (
+            <AiFillLike className={`text-lg ${isLiked ? "animate-pulse-custom" : ""}`} />
+          ) : (
+            <AiOutlineLike className="text-lg" />
+          )}
+          <span className="text-sm font-medium">{likeCount}</span>
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowComments(!showComments)}
+          className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-text-muted hover:text-accent hover:bg-accent/5 transition-all duration-300"
+        >
+          <FaRegComment className="text-lg" />
+          <span className="text-sm font-medium">{comments.length}</span>
+        </motion.button>
+      </div>
+
+      {/* Comments Section */}
+      <AnimatePresence>
+        {showComments && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-4"
+          >
+            <div className="divider my-3"></div>
+            
+            {/* Comment Form */}
+            <div className="flex items-center mb-4">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Add a thoughtful comment..."
+                className="flex-1 bg-secondary/30 rounded-l-full py-2 px-4 focus:bg-secondary/50"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={!commentText.trim() || submittingComment}
+                onClick={handleCommentSubmit}
+                className="bg-accent hover:bg-accent-hover text-white py-2 px-4 rounded-r-full transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <IoSend className="text-lg" />
+              </motion.button>
+            </div>
+
+            {/* Comments List */}
+            <div className="space-y-3 max-h-72 overflow-y-auto no-scrollbar">
+              {comments.length === 0 ? (
+                <p className="text-text-muted text-center text-sm py-4">No comments yet. Be the first to comment!</p>
+              ) : (
+                comments.map((comment, index) => (
+                  <motion.div
+                    key={comment._id || index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="glassmorphism p-3"
+                  >
+                    <div className="flex items-center mb-2">
+                      <img
+                        src={comment.user?.avatar || "https://via.placeholder.com/30"}
+                        alt={`${comment.user?.username || "User"}'s avatar`}
+                        className="w-6 h-6 rounded-full mr-2 border border-accent/20"
+                      />
+                      <div className="flex flex-col flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm text-text-primary">
+                            {comment.user?.username || "Anonymous"}
+                          </span>
+                          <span className="text-text-muted text-xs">
+                            {formatCommentDate(comment.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-text-secondary text-sm pl-8">{comment.text}</p>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.article>
   );
 };
 

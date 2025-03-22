@@ -2,80 +2,75 @@ import React, { useState } from "react";
 import axios from "axios";
 import profile from ".././assets/vhjkl.jpeg";
 import { ImCross } from "react-icons/im";
+import { FaPen, FaQuestionCircle, FaTimes } from "react-icons/fa";
 
 const PostInput = () => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(); // Default selected category is "Updates"
-  const [postContent, setPostContent] = useState(""); // State to hold post content
-  const [title, setTitle] = useState(""); // State to hold post title
-  const [tags, setTags] = useState(""); // State to hold input tags
+  const [selectedCategory, setSelectedCategory] = useState("Updates");
+  const [postContent, setPostContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState("");
 
-  const baseURL = "http://localhost:5000/api/posts"; // Base URL for API
-  const discussionURL = "http://localhost:5000/api/discussions"; // Base URL for discussions API
+  const baseURL = "http://localhost:5000/api/posts";
+  const discussionURL = "http://localhost:5000/api/discussions";
 
-  // Open modal when the input is clicked
   const handleInputClick = () => setShowModal(true);
 
-  // Close modal function
   const closeModal = () => {
     setShowModal(false);
-    // setSelectedCategory("Updates"); // Reset category to default
     setPostContent("");
     setTitle("");
-    setTags(""); // Clear tags input
+    setTags("");
   };
 
-  // Handle category selection
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category); // Set the selected category state
-    setShowModal(true); // Open the modal
+    setSelectedCategory(category);
+    setShowModal(true);
   };
 
-  // Handle post submission with Authorization header
   const handlePostSubmit = async () => {
     const postData = {
       title: title,
       content: postContent,
-      tags: tags.split(",").map((tag) => tag.trim()), // Split tags by commas and trim spaces
+      tags: tags.split(",").map((tag) => tag.trim()),
     };
 
-    // Determine API endpoint based on the selected category
     const apiURL =
-      selectedCategory === "Ask Questions" ? discussionURL : baseURL; // Use discussions API for "Ask Questions"
+      selectedCategory === "Ask Questions" ? discussionURL : baseURL;
 
-    // Get JWT token from localStorage
-    const token = localStorage.getItem("token"); // Replace 'token' with the actual key if it's different
+    const token = localStorage.getItem("token");
 
     try {
       const response = await axios.post(apiURL, postData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Set the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log("Post successful: ", response.data);
-      closeModal(); // Close the modal after successful post
+      closeModal();
+      window.location.reload(); // Refresh to see the new post
     } catch (error) {
       console.error("Error creating post: ", error);
     }
   };
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg w-full max-w-lg mx-auto">
+    <div className="bg-secondary p-5 rounded-lg shadow-md w-full max-w-lg mx-auto">
       {/* Top Input Section */}
       <div className="flex items-center space-x-4 mb-4">
         {/* Profile Picture */}
         <img
-          src={profile} // Replace with actual profile image URL
+          src={profile}
           alt="Profile"
-          className="w-10 h-10 rounded-full"
+          className="w-12 h-12 rounded-full border-2 border-accent"
         />
 
         {/* Input Field */}
         <input
           type="text"
           placeholder="What's Happening?"
-          className="flex-grow bg-gray-700 text-white p-2 rounded-full outline-none cursor-pointer"
-          onClick={handleInputClick} // Open modal on click
+          className="flex-grow bg-input text-text-primary p-3 rounded-full outline-none cursor-pointer border border-card-border hover:border-accent/50 transition-colors"
+          onClick={handleInputClick}
         />
       </div>
 
@@ -83,37 +78,47 @@ const PostInput = () => {
       <div className="flex justify-evenly mb-4">
         {/* Updates Button */}
         <button
-          className={`py-2 px-4 rounded-full ${
+          className={`py-2 px-6 rounded-full transition-all duration-300 flex items-center ${
             selectedCategory === "Updates"
-              ? "bg-blue-600 text-white" // Highlight the selected tab
-              : "bg-transparent border border-gray-600 text-white hover:bg-gray-600"
+              ? "bg-accent text-white shadow-md" 
+              : "bg-transparent border border-accent/30 text-text-secondary hover:bg-card"
           }`}
           onClick={() => handleCategorySelect("Updates")}
         >
+          <FaPen className={`mr-2 ${selectedCategory === "Updates" ? "text-white" : "text-accent"}`} />
           Updates
         </button>
 
         {/* Ask Questions Button */}
         <button
-          className={`py-2 px-4 rounded-full ${
+          className={`py-2 px-6 rounded-full transition-all duration-300 flex items-center ${
             selectedCategory === "Ask Questions"
-              ? "bg-blue-600 text-white" // Highlight the selected tab
-              : "bg-transparent border border-gray-600 text-white hover:bg-gray-600"
+              ? "bg-accent text-white shadow-md" 
+              : "bg-transparent border border-accent/30 text-text-secondary hover:bg-card"
           }`}
           onClick={() => handleCategorySelect("Ask Questions")}
         >
+          <FaQuestionCircle className={`mr-2 ${selectedCategory === "Ask Questions" ? "text-white" : "text-accent"}`} />
           Ask Questions
         </button>
       </div>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-          <div className="bg-gray-800 p-6 rounded-lg w-full max-w-md mx-auto relative">
-            <h3 className="text-white text-lg mb-4">
-              {selectedCategory === "Ask Questions"
-                ? "Ask a Question"
-                : "Create a Post for Updates"}
+        <div className="fixed inset-0 flex items-center justify-center bg-primary/80 z-50 backdrop-blur-sm">
+          <div className="bg-secondary p-6 rounded-lg w-full max-w-md mx-auto relative shadow-lg border border-card-border">
+            <h3 className="text-text-primary text-xl font-semibold mb-4 flex items-center">
+              {selectedCategory === "Ask Questions" ? (
+                <>
+                  <FaQuestionCircle className="text-accent mr-2" />
+                  Ask a Question
+                </>
+              ) : (
+                <>
+                  <FaPen className="text-accent mr-2" />
+                  Create a Post for Updates
+                </>
+              )}
             </h3>
 
             {/* Title Input */}
@@ -126,12 +131,12 @@ const PostInput = () => {
                   ? "Enter your question title"
                   : "Enter the title"
               }
-              className="w-full mb-3 bg-gray-700 text-white p-3 rounded-lg outline-none"
+              className="w-full mb-3 bg-input text-text-primary p-3 rounded-lg outline-none border border-card-border focus:border-accent"
             />
 
             {/* Textarea for content */}
             <textarea
-              className="w-full bg-gray-700 text-white p-3 rounded-lg outline-none "
+              className="w-full bg-input text-text-primary p-3 rounded-lg outline-none border border-card-border focus:border-accent"
               rows="5"
               value={postContent}
               onChange={(e) => setPostContent(e.target.value)}
@@ -148,19 +153,19 @@ const PostInput = () => {
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="Enter tags (comma separated)"
-              className="w-full mt-3 bg-gray-700 text-white p-3 rounded-lg outline-none"
+              className="w-full mt-3 bg-input text-text-primary p-3 rounded-lg outline-none border border-card-border focus:border-accent"
             />
 
             {/* Modal Buttons */}
             <div className="flex justify-end mt-4 space-x-2">
               <button
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500"
+                className="bg-input text-text-secondary px-4 py-2 rounded-lg hover:bg-card transition-colors"
                 onClick={closeModal}
               >
                 Cancel
               </button>
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500"
+                className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors"
                 onClick={handlePostSubmit}
               >
                 {selectedCategory === "Ask Questions" ? "Ask" : "Post"}
@@ -169,10 +174,10 @@ const PostInput = () => {
 
             {/* Close button in top-right corner */}
             <button
-              className="absolute top-2 right-2 text-white text-sm bg-gray-600 hover:bg-gray-500 rounded-full p-2"
+              className="absolute top-3 right-3 text-text-muted hover:text-text-primary transition-colors bg-input hover:bg-card rounded-full p-2"
               onClick={closeModal}
             >
-              <ImCross/>
+              <FaTimes />
             </button>
           </div>
         </div>

@@ -1,33 +1,50 @@
 import React from "react";
-import { FaCircle } from "react-icons/fa"; // Importing FontAwesome circle icon
+import { FaHome, FaBookOpen, FaComments, FaRoute } from "react-icons/fa";
 
 const QuickLinks = () => (
-  <div className="bg-gray-700 p-4 mt-4 rounded-lg">
-    <h3 className="text-white text-lg font-semibold">Quick Links 🚀</h3>
-    <ul className="mt-4 space-y-2">
-      <li className="flex items-center text-blue-300 hover:text-blue-500">
-        <FaCircle className="text-blue-300 mr-2" />{" "}
-        {/* Icon for each list item */}
-        <a href="/resources" className="font-medium">
-          Resources
+  <div className="bg-secondary rounded-lg shadow-md mt-6 overflow-hidden">
+    <div className="bg-gradient-to-r from-accent to-accent-light p-4">
+      <h3 className="text-white text-lg font-semibold">Quick Links 🚀</h3>
+    </div>
+    
+    <ul className="p-4 space-y-3">
+      <li>
+        <a 
+          href="/resources" 
+          className="flex items-center p-3 rounded-lg transition-all duration-300 hover:bg-card group"
+        >
+          <FaBookOpen className="text-accent mr-3 text-lg group-hover:text-secondary-accent transition-colors" />
+          <span className="text-text-secondary group-hover:text-white transition-colors">Resources</span>
         </a>
       </li>
-      <li className="flex items-center text-blue-300 hover:text-blue-500">
-        <FaCircle className="text-blue-300 mr-2" />
-        <a href="/discussion" className="font-medium">
-          Discussion Section
+      
+      <li>
+        <a 
+          href="/discussion" 
+          className="flex items-center p-3 rounded-lg transition-all duration-300 hover:bg-card group"
+        >
+          <FaComments className="text-accent mr-3 text-lg group-hover:text-secondary-accent transition-colors" />
+          <span className="text-text-secondary group-hover:text-white transition-colors">Discussion Section</span>
         </a>
       </li>
-      <li className="flex items-center text-blue-300 hover:text-blue-500">
-        <FaCircle className="text-blue-300 mr-2" />
-        <a href="/home" className="font-medium">
-          Home
+      
+      <li>
+        <a 
+          href="/" 
+          className="flex items-center p-3 rounded-lg transition-all duration-300 hover:bg-card group"
+        >
+          <FaHome className="text-accent mr-3 text-lg group-hover:text-secondary-accent transition-colors" />
+          <span className="text-text-secondary group-hover:text-white transition-colors">Home</span>
         </a>
       </li>
-      <li className="flex items-center text-blue-300 hover:text-blue-500">
-        <FaCircle className="text-blue-300 mr-2" />
-        <a href="/roadmap" className="font-medium">
-          Road Map Generator
+      
+      <li>
+        <a 
+          href="/roadmap" 
+          className="flex items-center p-3 rounded-lg transition-all duration-300 hover:bg-card group"
+        >
+          <FaRoute className="text-accent mr-3 text-lg group-hover:text-secondary-accent transition-colors" />
+          <span className="text-text-secondary group-hover:text-white transition-colors">Road Map Generator</span>
         </a>
       </li>
     </ul>

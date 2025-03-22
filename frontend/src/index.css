@@ -6,19 +6,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --primary: #0f172a;
-  --secondary: #1e293b;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-light: #818cf8;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --card-bg: rgba(30, 41, 59, 0.85);
-  --card-border: rgba(148, 163, 184, 0.1);
+  --primary: #0F1729;
+  --secondary: #1A2136;
+  --card-bg: #242C42;
+  --input-bg: #161E33;
+  --accent: #4E7CFF;
+  --accent-hover: #3D6AE8;
+  --accent-light: #6B5CFF;
+  --secondary-accent: #FF6B6B;
+  --success: #36D399;
+  --warning: #FFCA28;
+  --danger: #FF5252;
+  --text-primary: #F0F4FF;
+  --text-secondary: #B0BCDC;
+  --text-muted: #697297;
+  --card-border: rgba(240, 244, 255, 0.08);
   --transition-speed: 0.3s;
   --border-radius: 0.5rem;
   --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -110,7 +112,7 @@ body {
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 12px rgba(78, 124, 255, 0.3);
 }
 
 .btn:active {
@@ -142,15 +144,15 @@ body {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 15px rgba(78, 124, 255, 0.3);
 }
 
 /* Glass morphism effect */
 .glassmorphism {
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(26, 33, 54, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
   border-radius: var(--border-radius);
 }
 
@@ -174,7 +176,7 @@ body {
 
 /* Input focus effect */
 input, textarea {
-  background-color: rgba(30, 41, 59, 0.5);
+  background-color: var(--input-bg);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
   border-radius: var(--border-radius);
@@ -183,7 +185,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 3px rgba(78, 124, 255, 0.3);
   outline: none;
   border-color: var(--accent);
   transition: box-shadow 0.3s ease;
@@ -211,4 +213,67 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(to right, transparent, var(--text-muted), transparent);
   margin: 1.5rem 0;
   opacity: 0.5;
+}
+
+/* Color utility classes */
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+}
+
+.bg-card {
+  background-color: var(--card-bg);
+}
+
+.bg-input {
+  background-color: var(--input-bg);
+}
+
+.text-primary-color {
+  color: var(--text-primary);
+}
+
+.text-secondary-color {
+  color: var(--text-secondary);
+}
+
+.text-muted-color {
+  color: var(--text-muted);
+}
+
+.accent-color {
+  color: var(--accent);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-secondary-accent {
+  background-color: var(--secondary-accent);
+}
+
+.border-accent {
+  border-color: var(--accent);
+}
+
+.hover-bg-accent:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Gradient button */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--text-primary);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(78, 124, 255, 0.4);
 }

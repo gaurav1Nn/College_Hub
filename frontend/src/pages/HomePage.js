@@ -4,56 +4,40 @@ import PostList from "../components/PostList";
 import PostInput from "../components/PostInput";
 import ProfileCard from "../components/ProfileCard";
 import QuickLinks from "../components/QuickLinks";
-import TrendingSidebar from "../components/TrendingSidebar";
+import TrendingSidebar from "../components/TrendingSidebar.js";
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState("all");
 
   return (
-    <div className="min-h-screen bg-[#06141D] text-gray-200">
+    <div className="min-h-screen bg-primary text-primary-color">
       {/* Header */}
       <Header />
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex flex-col md:flex-row px-4 py-6">
         {/* Left Sidebar */}
-        <aside className="w-1/4 p-4">
+        <aside className="w-full md:w-1/4 p-4">
           <ProfileCard />
           <QuickLinks />
         </aside>
 
-        <main className="w-2/4 p-4">
+        <main className="w-full md:w-2/4 p-4">
           <PostInput />
 
           {/* Tab Buttons */}
-          <div className="flex justify-center my-4">
-            {/* <button
-              className={`border border-gray-600 text-white py-2 px-4 m-1 rounded-full hover:bg-gray-600 ${
-                selectedTab === "content" ? "bg-gray-600" : "bg-transparent"
-              }`}
-              onClick={() => setSelectedTab("content")}
-            >
-              Content
-            </button>
+          <div className="flex justify-center my-6">
             <button
-              className={`border border-gray-600 text-white py-2 px-4 m-1 rounded-full hover:bg-gray-600 ${
-                selectedTab === "collaborative" ? "bg-gray-600" : "bg-transparent"
-              }`}
-              onClick={() => setSelectedTab("collaborative")}
-            >
-              Collaborative
-            </button> */}
-            <button
-              className={`border border-gray-600 text-white py-2 px-4 m-1 rounded-full hover:bg-gray-600 ${
-                selectedTab === "all" ? "bg-gray-600" : "bg-transparent"
+              className={`border border-accent/30 text-primary-color py-2 px-6 m-1 rounded-full transition-colors duration-300 hover:bg-accent hover:text-white ${
+                selectedTab === "all" ? "bg-accent text-white" : "bg-transparent"
               }`}
               onClick={() => setSelectedTab("all")}
             >
               All
             </button>
             <button
-              className={`border border-gray-600 text-white py-2 px-4 m-1 rounded-full hover:bg-gray-600 ${
-                selectedTab === "hybrid" ? "bg-gray-600" : "bg-transparent"
+              className={`border border-accent/30 text-primary-color py-2 px-6 m-1 rounded-full transition-colors duration-300 hover:bg-accent hover:text-white ${
+                selectedTab === "hybrid" ? "bg-accent text-white" : "bg-transparent"
               }`}
               onClick={() => setSelectedTab("hybrid")}
             >
@@ -61,14 +45,21 @@ const HomePage = () => {
             </button>
           </div>
 
-
           {/* PostList Component */}
           <PostList selectedTab={selectedTab} />
         </main>
 
         {/* Right Sidebar */}
-        <aside className="w-1/4 p-4">
-          <TrendingSidebar />
+        <aside className="w-full md:w-1/4 p-4">
+          {/* Try/catch for TrendingSidebar */}
+          {(() => {
+            try {
+              return <TrendingSidebar />;
+            } catch (error) {
+              console.error("TrendingSidebar error:", error);
+              return <div className="bg-secondary rounded-lg p-4">Trending section unavailable</div>;
+            }
+          })()}
         </aside>
       </div>
     </div>

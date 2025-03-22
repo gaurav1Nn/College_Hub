@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-import { FaRegComment } from "react-icons/fa";
-import { IoTimeOutline, IoSend } from "react-icons/io5";
+import { FaRegComment, FaUserCircle } from "react-icons/fa";
+import { IoTimeOutline, IoSend, IoEllipsisHorizontal } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
@@ -140,18 +140,18 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="paper mb-6 overflow-hidden"
+      className="bg-secondary rounded-xl shadow-md border border-card-border p-5 mb-6 overflow-hidden"
     >
       {/* Post Header */}
-      <div className="flex items-start">
+      <div className="flex items-start gap-3">
         <motion.div 
           className="relative"
           whileHover={{ scale: 1.05 }}
         >
           <img
-            src={avatar || "https://via.placeholder.com/40"}
+            src={avatar || `https://ui-avatars.com/api/?name=${createdBy.username}&background=random`}
             alt={`${createdBy.username}'s avatar`}
-            className="w-10 h-10 rounded-full object-cover border-2 border-accent/30"
+            className="w-12 h-12 rounded-full object-cover border-2 border-accent/30"
           />
           <motion.div 
             className="absolute -bottom-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center border-2 border-secondary"
@@ -161,32 +161,37 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
           </motion.div>
         </motion.div>
         
-        <div className="ml-3 flex-1">
-          <div className="flex items-center justify-between">
-            <motion.h3 
-              initial={{ x: -10, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="font-semibold text-text-primary"
-            >
-              {createdBy.username}
-            </motion.h3>
-            <motion.div 
-              initial={{ x: 10, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="flex items-center text-text-muted text-xs"
-            >
-              <IoTimeOutline className="mr-1" />
-              <span>{formattedDate}</span>
-            </motion.div>
+        <div className="flex-1">
+          <div className="flex items-start justify-between">
+            <div>
+              <motion.h3 
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="font-semibold text-text-primary"
+              >
+                {createdBy.username}
+              </motion.h3>
+              <motion.div 
+                initial={{ x: 10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="flex items-center text-text-muted text-xs"
+              >
+                <IoTimeOutline className="mr-1" />
+                <span>{formattedDate}</span>
+              </motion.div>
+            </div>
+            <button className="text-text-muted hover:text-text-primary p-1 rounded-full hover:bg-card transition-colors">
+              <IoEllipsisHorizontal />
+            </button>
           </div>
           
           <motion.h2
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-xl font-semibold mt-1 mb-3 text-text-primary"
+            className="text-xl font-semibold mt-3 mb-2 text-text-primary"
           >
             {title}
           </motion.h2>
@@ -198,16 +203,13 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mt-3 mb-4 text-text-secondary leading-relaxed"
+        className="mt-4 mb-5 text-text-secondary leading-relaxed"
       >
         <p className="whitespace-pre-line">{content}</p>
       </motion.div>
 
-      {/* Divider */}
-      <div className="divider my-4"></div>
-
       {/* Post Actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-t border-card-border pt-4">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -230,7 +232,11 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-text-muted hover:text-accent hover:bg-accent/5 transition-all duration-300"
+          className={`flex items-center space-x-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
+            showComments 
+              ? "text-accent bg-accent/10" 
+              : "text-text-muted hover:text-accent hover:bg-accent/5"
+          }`}
         >
           <FaRegComment className="text-lg" />
           <span className="text-sm font-medium">{comments.length}</span>
@@ -247,63 +253,82 @@ const Post = ({ postId, avatar, createdBy, title, content, likes, comments: init
             transition={{ duration: 0.3 }}
             className="mt-4"
           >
-            <div className="divider my-3"></div>
+            <div className="border-t border-card-border my-3"></div>
             
             {/* Comment Form */}
-            <div className="flex items-center mb-4">
-              <input
-                type="text"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Add a thoughtful comment..."
-                className="flex-1 bg-secondary/30 rounded-l-full py-2 px-4 focus:bg-secondary/50"
-              />
+            <form onSubmit={handleCommentSubmit} className="flex items-end space-x-2 mb-4">
+              <div className="flex-1">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Write a comment..."
+                  className="w-full bg-input text-text-primary border border-card-border rounded-lg p-3 min-h-[80px] focus:ring-2 focus:ring-accent/40 focus:border-accent resize-none"
+                />
+              </div>
+              
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                disabled={!commentText.trim() || submittingComment}
-                onClick={handleCommentSubmit}
-                className="bg-accent hover:bg-accent-hover text-white py-2 px-4 rounded-r-full transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                type="submit"
+                disabled={submittingComment || !commentText.trim()}
+                className={`flex items-center justify-center bg-accent hover:bg-accent-hover text-white rounded-lg p-3 h-10 w-10 ${
+                  submittingComment || !commentText.trim() ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                <IoSend className="text-lg" />
+                <IoSend />
               </motion.button>
-            </div>
-
+            </form>
+            
             {/* Comments List */}
-            <div className="space-y-3 max-h-72 overflow-y-auto no-scrollbar">
-              {comments.length === 0 ? (
-                <p className="text-text-muted text-center text-sm py-4">No comments yet. Be the first to comment!</p>
-              ) : (
+            <motion.div 
+              className="space-y-4 mt-4 max-h-96 overflow-y-auto pr-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              {comments.length > 0 ? (
                 comments.map((comment, index) => (
                   <motion.div
-                    key={comment._id || index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="glassmorphism p-3"
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-card rounded-lg p-3 flex gap-3"
                   >
-                    <div className="flex items-center mb-2">
-                      <img
-                        src={comment.user?.avatar || "https://via.placeholder.com/30"}
-                        alt={`${comment.user?.username || "User"}'s avatar`}
-                        className="w-6 h-6 rounded-full mr-2 border border-accent/20"
-                      />
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-sm text-text-primary">
-                            {comment.user?.username || "Anonymous"}
-                          </span>
-                          <span className="text-text-muted text-xs">
-                            {formatCommentDate(comment.createdAt)}
-                          </span>
-                        </div>
-                      </div>
+                    <div className="flex-shrink-0">
+                      {comment.createdBy?.username ? (
+                        <img 
+                          src={`https://ui-avatars.com/api/?name=${comment.createdBy.username}&background=random`} 
+                          alt={`${comment.createdBy.username}'s avatar`} 
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <FaUserCircle className="w-8 h-8 text-text-muted" />
+                      )}
                     </div>
-                    <p className="text-text-secondary text-sm pl-8">{comment.text}</p>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-medium text-text-primary text-sm">
+                          {comment.createdBy?.username || "Unknown User"}
+                        </h4>
+                        <span className="text-xs text-text-muted">
+                          {formatCommentDate(comment.createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-text-secondary text-sm mt-1">{comment.text}</p>
+                    </div>
                   </motion.div>
                 ))
+              ) : (
+                <motion.p 
+                  className="text-center text-text-muted py-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  No comments yet. Be the first to comment!
+                </motion.p>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

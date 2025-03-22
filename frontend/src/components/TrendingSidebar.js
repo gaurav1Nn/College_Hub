@@ -1,19 +1,42 @@
 // TrendingSidebar.jsx
 import React from "react";
+import { FaChartLine, FaHashtag } from "react-icons/fa";
 
-const TrendingSidebar = () => (
-  <aside className="bg-gray-700 p-6 rounded-lg text-white">
-    <h3 className="text-lg">Trending ✨</h3>
-    <ul className="mt-4">
-      <li className="mt-2"># JavaScript</li>
-      <li className="mt-2"># Full Stack</li>
-      <li className="mt-2"># Team Work</li>
-      <li className="mt-2"># Mobile Dev</li>
-      <li className="mt-2"># Interviews</li>
-      <li className="mt-2"># Projects</li>
-      <li className="mt-2"># Assignment</li>
-    </ul>
-  </aside>
-);
+const TrendingSidebar = () => {
+  const trendingTags = [
+    "JavaScript",
+    "Full Stack",
+    "Team Work",
+    "Mobile Dev",
+    "Interviews",
+    "Projects",
+    "Assignment"
+  ];
+
+  return (
+    <div className="bg-secondary rounded-lg shadow-md overflow-hidden">
+      <div className="bg-gradient-to-r from-accent to-accent-light p-4 flex items-center">
+        <FaChartLine className="mr-2 text-white" />
+        <h3 className="text-white text-lg font-semibold">Trending</h3>
+      </div>
+      
+      <ul className="p-4">
+        {trendingTags.map((tag, index) => (
+          <li key={index} className="mt-3 first:mt-0">
+            <a 
+              href={`#${tag.toLowerCase().replace(/\s+/g, '')}`}
+              className="flex items-center px-3 py-2 rounded-lg hover:bg-card transition-colors duration-300 group"
+            >
+              <FaHashtag className="text-accent mr-2 group-hover:text-secondary-accent" />
+              <span className="text-text-secondary group-hover:text-white transition-colors">
+                {tag}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default TrendingSidebar;
